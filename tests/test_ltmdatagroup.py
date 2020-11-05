@@ -1,23 +1,33 @@
 from BigipApi import LtmDataGroup
-from tests.get_env_vars import *
+from BigipApi import log
+import logging
+import os
 
 
-def test_create_data_group():
+def test_LtmDataGroup():
+    log.setLevel(logging.DEBUG)
     dg = LtmDataGroup(
-        hostname=host,
-        username=user,
-        password=pwd,
-        data_group_name=datagroup_name,
-        partition=partition
+        hostname=os.environ.get("BIGIPAPI_HOSTNAME"),
+        username=os.environ.get("BIGIPAPI_USERNAME"),
+        password=os.environ.get("BIGIPAPI_PASSWORD"),
+        # token="VWMXVA43TB66WF2C3LC2T4PYEL",
+        verify_ssl=True
     )
 
-    c = dg.create_data_group(data_group_type="ip")
-    assert c.ok
-    u = dg.add_entry_to_data_group([{"name": "13.13.13.13", "data": "myip13"}])
-    print()
-    assert u.ok
-    r = dg.remove_entry_from_data_group("13.13.13.13/32")
-    assert r.ok
-    d = dg.delete_data_group()
-    assert d.ok
+    name = "plejon_lab"
+
+    create = dg.create_data_group(name, "ip")
+    assert create.ok
+
+    get = dg.get_data_group(name)
+    assert get.ok
+
+    add = dg.add_records(name, [{"name": "14.14.14.14/32", "data": "Ticket123"}])
+    assert add.ok
+
+    remove_entries = dg.remove_all_entries(name)
+    assert remove_entries.ok
+
+    delete = dg.delete_data_group(name)
+    assert delete.ok
 

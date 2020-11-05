@@ -15,7 +15,7 @@ __pycache__
 build/
 dist/
 .vscode/*
-.idea/
+BigipApi/.idea/
 .venv/
 .cache
 AkamaiDns/
