@@ -8,7 +8,7 @@ the token is stored until the python process dies. can save tokens from multiple
 
 ### Install
 ```bash
-install git+https://github.com/plejon/BigipApi.git@master
+pip install git+https://github.com/plejon/BigipApi.git@master
 ```
 ### Uninstall
 ```bash
