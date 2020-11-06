@@ -27,11 +27,12 @@ https://clouddocs.f5.com/api/icontrol-rest/APIRef_tm_analytics.html
 ```
 argument "select"
 ```
-all get methods have a select argument. this selects only which keys you want to get form your request.
+all get methods have a select argument. 
+this selects only which keys you want to get form your request.
 select=["name", "address"] will only return the nodes address and name
 
-if an item has subcollecitons, like pools. then expand_subcollections but be true to filter on
-memeber keys.
+if an item has subcollecitons, like pools. then expand_subcollections must be true to filter on
+member keys.
 
 example on LtmPool.get_pool()
 
