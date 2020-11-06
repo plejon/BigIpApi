@@ -1,12 +1,11 @@
+from datetime import datetime
 from time import time
 
-import requests
 from requests import Session
-from datetime import datetime
 
 from BigipApi import const
-from BigipApi.const import Credentials, url_base
 from BigipApi import log
+from BigipApi.const import Credentials, url_base
 
 
 class AuthSession:
@@ -19,12 +18,13 @@ class AuthSession:
         self.password = password
         self.token = token
         self.verify_ssl = verify_ssl
-        print()
+
         if not self.hostname:
             raise ValueError("hostname not set")
 
         if self.verify_ssl is False:
             import urllib3  # noaq
+
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     @property
@@ -63,11 +63,6 @@ class AuthSession:
     def _update_saved_token_ttl(cls, *, hostname):
         """Updates current token ttl to 7 hours 40 minutes"""
         cls.cache[hostname]["ttl"] += (const.Token.timeout - 600) * 1000000
-
-    def get_token(self):
-        """get Bigip token and return it to the user"""
-        self._get_token()
-        return self.cache[self.hostname]
 
     def _get_token(self, client: Session):
         """calls bigip to get a user token"""

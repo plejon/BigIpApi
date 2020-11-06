@@ -10,13 +10,13 @@ def test_ltmnode():
         hostname=os.environ.get("BIGIPAPI_HOSTNAME"),
         username=os.environ.get("BIGIPAPI_USERNAME"),
         password=os.environ.get("BIGIPAPI_PASSWORD"),
-        # token="VWMXVA43TB66WF2C3LC2T4PYEL",
+        token="IZUCGKWB57A3JRCRFAFDAGLNXW",
         verify_ssl=False
     )
     name = "plejon_node"
     address = "15.15.15.15"
 
-    create = node.create_node(name, address)
+    create = node.create_node(name=name, address=address)
     assert create.ok
 
     get = node.get_node(name)

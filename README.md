@@ -25,11 +25,62 @@ https://clouddocs.f5.com/api/icontrol-rest/APIRef_tm_analytics.html
 >>> BigipApi.__all__
 ('LtmNode', 'LtmPool', 'LtmDataGroup')
 ```
+argument "select"
+```
+all get methods have a select argument. this selects only which keys you want to get form your request.
+select=["name", "address"] will only return the nodes address and name
+
+if an item has subcollecitons, like pools. then expand_subcollections but be true to filter on
+memeber keys.
+
+example on LtmPool.get_pool()
+
+get_pool(
+    expand_subcollections=True
+    select=[
+        "name",
+        "partition",
+        "monitor",
+        "membersReference/items/address",
+        "membersReference/items/state",
+        "membersReference/items/name"
+    ]
+)
+
+This will give the below response
+
+{
+  "membersReference": {
+    "items": [
+      {
+        "nameReference": {
+          "link": "https://localhost/mgmt/tm/ltm/node/~Common~10.10.10.10:8080?ver=14.1.2.6"
+        }, 
+        "state": "up", 
+        "name": "10.10.10.10:8080", 
+        "address": "10.0.10.10"
+      }, 
+      {
+        "nameReference": {
+          "link": "https://localhost/mgmt/tm/ltm/node/~Common~10.11.11.11:8080?ver=14.1.2.6"
+        }, 
+        "state": "down", 
+        "name": "10.11.11.11:8080", 
+        "address": "10.11.11.11"
+      }
+    ]
+  }, 
+  "partition": "Common", 
+  "name": "plejon_lab", 
+  "monitor": "/Common/ping"
+}
+
+```
 > Example 
 ```python
 >>> from BigipApi import LtmNode
 >>> node = LtmNode(hostname="11.11.11.11",username="admin",password="secret", verify_ssl=False)
->>> new = node.create_node("testnode", address="10.10.10.10")
+>>> new = node.create_node(name="testnode", address="10.10.10.10")
 
 >>> new
 <Response [200]>
@@ -78,13 +129,11 @@ True
 >>> from BigipApi import LtmNode
 >>> help(LtmNode)
 
-Help on class LtmNode in module BigipApi.ltm.node:
-
 class LtmNode(builtins.object)
  |  LtmNode(*, hostname, username, password, token=None, verify_ssl=True)
- |
+ |  
  |  Methods defined here:
- |
+ |  
  |  __init__(self, *, hostname, username, password, token=None, verify_ssl=True)
  |      Args:
  |          hostname (): fqdn or ip of bigip device
@@ -92,45 +141,54 @@ class LtmNode(builtins.object)
  |          password ():
  |          token (): if supplied, username and password will be ignored.
  |          verify_ssl (): verifies valid SSL cert on bigip mgmt interface
- |
+ |  
  |  check_if_node_exist(self, name: str, partition: str = 'Common') -> bool
  |      Check if a node exist on the bigip
  |      Args:
  |          name (): name of node
  |          partition (): if not set, partition will be "Common"
- |
+ |      
  |      Returns:
  |          True or False
- |
- |  create_node(self, name: str, address: str = '', partition: str = 'Common') -> requests.models.Response
+ |  
+ |  create_node(self, *, name: str, address: str, partition: str = 'Common') -> requests.models.Response
  |      Args:
  |          name (): name of node
  |          address (): ip adress
  |          partition (): if not set, partition will be "Common"
- |
+ |  
  |  delete_node(self, name: str, partition: str = 'Common') -> requests.models.Response
  |      Args:
  |          name (): name of node
  |          partition (): if not set, partition will be "Common"
- |
- |  get_all_nodes(self, partition) -> requests.models.Response
+ |  
+ |  get_all_nodes(self, partition: str, select: List[str] = None) -> requests.models.Response
  |      Get nodes from bigip device
  |      Args:
+ |          select (): if set, will return only specified values from the bigip pool
+ |                     example: ["name","partition","address"]
  |          partition (): if supplied, returns all nodes from that partition. else
  |          returns all nodes on the bigip device
- |
- |  get_node(self, name: str, partition: str = 'Common') -> requests.models.Response
+ |  
+ |  get_node(self, name: str, partition: str = 'Common', select: List[str] = None) -> requests.models.Response
  |      Return singel node
  |      Args:
  |          name (): name of node
  |          partition (): if not set, partition will be "Common"
- |
- |  get_node_by_ip(self, ip: str, partition: str = None, /) -> List[Dict]
+ |  
+ |  get_node_by_ip(self, ip: str, partition: str = None) -> List[Dict]
  |      Get a node by the nodes ip adress
  |      Args:
  |          ip (): ip of node to get
  |          partition (): if not set, partition will be "Common"
- |
+ |  
  |  ----------------------------------------------------------------------
+ |  Data descriptors defined here:
+ |  
+ |  __dict__
+ |      dictionary for instance variables (if defined)
+ |  
+ |  __weakref__
+ |      list of weak references to the object (if defined)
 :
 ```
