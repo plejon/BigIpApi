@@ -4,7 +4,7 @@ from time import time
 from requests import Session
 
 from BigipApi import const
-from BigipApi import log
+from BigipApi.logger import log
 from BigipApi.const import Credentials, url_base
 
 
