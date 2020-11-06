@@ -2,13 +2,8 @@ from typing import List
 
 from requests import session, Response
 
-from BigipApi.const import (
-    url_pool,
-    url_all_pool_partiton,
-    default_partition,
-    url_all_pool,
-    Pool,
-)
+from BigipApi.const import url_pool, default_partition, Pool, build_uri
+
 from BigipApi.restclient import RestClient
 
 
@@ -40,21 +35,30 @@ class LtmPool:
 
         return client
 
-    def get_pools(self, partition: str = None) -> Response:
+    def get_pools(
+        self, partition: str = None, select: List[str] = None, expand_subcollections=False
+    ) -> Response:
         """
         Get all pools from a partition
         Args:
+            expand_subcollections (): if True, includes members reference of pool(s)
+            select (): if set, will return only specified values from the bigip pool
+                       example: ["name","partition","address"]
+                       example from sub objects ["membersReference/items/address"]
+                               this will only yield pool memeber addresses
             partition (): if not set. return all pools form all partitions
         """
-        if partition:
-            uri = url_all_pool_partiton.format(partition)
-        else:
-            uri = url_all_pool
+        uri = build_uri(
+            uri=url_pool,
+            partition=partition,
+            select=select,
+            expand_subcollections=expand_subcollections,
+        )
 
         return self.client.get(uri=uri)
 
     def create_pool(
-        self, name: str, monitor: str = None, partition=default_partition
+        self, *, name: str, monitor: str = "", partition=default_partition
     ) -> Response:
         """
         Args:
@@ -88,7 +92,8 @@ class LtmPool:
         else:
             body = {"members": [{"name": f"{x}:{port}"} for x in nodes]}
 
-        return self.client.patch(uri=f"{url_pool}/~{partition}~{name}", body=body)
+        uri = build_uri(uri=url_pool, name=name, partition=partition)
+        return self.client.patch(uri=uri, body=body)
 
     def delete_pool(self, name: str, partition=default_partition) -> Response:
         """
@@ -97,15 +102,36 @@ class LtmPool:
             name (): name of pool
             partition (): if not set, partition will be "Common"
         """
-        return self.client.delete(f"{url_pool}/~{partition}~{name}")
+        uri = build_uri(uri=url_pool, name=name, partition=partition)
+        return self.client.delete(uri)
 
-    def get_pool(self, name: str, partition=default_partition) -> Response:
+    def get_pool(
+        self,
+        *,
+        name: str,
+        partition=default_partition,
+        select: List[str] = None,
+        expand_subcollections=False,
+    ) -> Response:
         """
         Args:
+            select (): if set, will return only specified values from the bigip pool
+                       example: ["name","partition","address"]
+                       example from sub objects ["membersReference/items/address"]
+                               this will only yield pool memeber addresses
+            expand_subcollections (): if true, give all data from sub items. like memebers
             name (): name of pool
             partition (): if not set, partition will be "Common"
         """
-        return self.client.get(uri=f"{url_pool}/~{partition}~{name}")
+        uri = build_uri(
+            uri=url_pool,
+            name=name,
+            partition=partition,
+            expand_subcollections=expand_subcollections,
+            select=select,
+        )
+        # uri = build_uri(url_pool, partition, select, expand_members)
+        return self.client.get(uri=uri)
 
     def check_if_pool_exist(self, name: str, partition=default_partition) -> bool:
         """
@@ -117,4 +143,5 @@ class LtmPool:
         Returns:
             True or False
         """
-        return self.client.get(uri=f"{url_pool}/~{partition}~{name}").ok
+        uri = build_uri(uri=url_pool, name=name, partition=partition)
+        return self.client.get(uri=uri).ok
