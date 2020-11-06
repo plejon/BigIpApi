@@ -1,4 +1,5 @@
 from setuptools import setup
+from setuptools import find_packages
 
 setup(
     name="BigipApi",
@@ -6,7 +7,7 @@ setup(
     author_email="per@lejon.org",
     url="https://github.com/plejon/BigipApi",
     version="3.0.3",
-    packages=["BigipApi"],
+    packages=find_packages(exclude=("test*",)),
     license="MIT",
     classifiers=[
         "License :: OSI Approved :: MIT License",
