@@ -20,10 +20,8 @@ pip uninstall BigipApi
 https://clouddocs.f5.com/api/icontrol-rest/APIRef_tm_analytics.html
 
 > Available classes
-``` 
->>> import BigipApi
->>> BigipApi.__all__
-('LtmNode', 'LtmPool', 'LtmDataGroup')
+```
+LtmNode, LtmPool, LtmDataGroup
 ```
 argument "select"
 ```
