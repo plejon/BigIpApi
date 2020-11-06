@@ -5,7 +5,7 @@ setup(
     author="per lejon",
     author_email="per@lejon.org",
     url="https://github.com/plejon/BigipApi",
-    version="3.0.2",
+    version="3.0.3",
     packages=["BigipApi"],
     license="MIT",
     classifiers=[
