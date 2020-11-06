@@ -1,5 +1,5 @@
 from BigipApi import LtmPool, LtmNode
-from BigipApi import log
+from BigipApi.logger import log
 import logging
 import os
 
